@@ -3,8 +3,10 @@ import pybullet as p
 import time
 import pybullet_data
 from pyquaternion import Quaternion
+import math
 
 p.connect(p.GUI)
+print(pybullet_data.getDataPath())
 p.setAdditionalSearchPath(pybullet_data.getDataPath()) #optionally
 
 p.loadURDF("plane.urdf")
@@ -22,6 +24,9 @@ p.setRealTimeSimulation(0)
 target_x_id = p.addUserDebugParameter("x", -1, 1, 0)
 target_y_id= p.addUserDebugParameter("y", -1, 1, 0)
 target_z_id = p.addUserDebugParameter("z", -1, 1, 0)
+target_pitch_id = p.addUserDebugParameter("pitch", -math.pi, math.pi, 0)
+target_yaw_id= p.addUserDebugParameter("yaw", -math.pi, math.pi, 0)
+target_roll_id = p.addUserDebugParameter("roll", -math.pi, math.pi, 0)
 
 
 # print(p.getJointInfo(kuka,6))
@@ -32,8 +37,12 @@ while (True):
     target_x = p.readUserDebugParameter(target_x_id)
     target_y = p.readUserDebugParameter(target_y_id)
     target_z = p.readUserDebugParameter(target_z_id)
+    target_pitch = p.readUserDebugParameter(target_pitch_id)
+    target_yaw = p.readUserDebugParameter(target_yaw_id)
+    target_roll = p.readUserDebugParameter(target_roll_id)
+    target_orientation = p.getQuaternionFromEuler([target_pitch,target_yaw,target_roll])
     p.stepSimulation()
-    positions = p.calculateInverseKinematics(kuka, 6, [target_x,target_y,target_z])
+    positions = p.calculateInverseKinematics(kuka, 6, [target_x,target_y,target_z],target_orientation)
     p.setJointMotorControlArray(kuka, [0,1,2,3,4,5,6], p.POSITION_CONTROL,
         targetPositions = positions,
         forces = [maxForce, maxForce, maxForce, maxForce, maxForce, maxForce, maxForce])
