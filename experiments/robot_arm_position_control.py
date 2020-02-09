@@ -52,7 +52,7 @@ while (True):
 
     position, orientation,_,_,_,_ = p.getLinkState(kuka, 6)
 
-    print(orientation)
+    #print(orientation)
 
     initialVector = [0,0,1]
     rotation = Quaternion(orientation[3],orientation[0],orientation[1],orientation[2])
